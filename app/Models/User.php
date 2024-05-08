@@ -36,4 +36,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // This function is for JobControler>store :: It References the User_id With the Employer_id (Employe Know User in Table || User Dont know Employe in Table)
+    public function employer()
+    {
+        return $this->hasOne(Employer::class);
+    }
 }

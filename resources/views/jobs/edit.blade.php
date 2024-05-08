@@ -25,7 +25,7 @@
               </div>
 
               @error('title')
-                <p class="text-xs text-red-400 font-semibold">{{ $message }}</p>
+                <p class="text-xs text-red-400 font-semibold mt-1">{{ $message }}</p>
               @enderror
 
             </div>
@@ -46,7 +46,7 @@
               </div>
 
               @error('salary')
-                 <p class="text-xs text-red-400 font-semibold">{{ $message }}</p>
+                 <p class="text-xs text-red-400 font-semibold mt-1">{{ $message }}</p>
               @enderror
             
             </div>
@@ -85,7 +85,7 @@
   </form>
 
   {{-- To put one Form(delete) in the another Form(edit) --}}
-  <form method="POST" action="/jobs/{{ $job->id }}" id="delete-form" class="">
+  <form method="POST" action="/jobs/{{ $job->id }}" id="delete-form" class="hidden">
     @csrf
     @method('DELETE')
   </form>

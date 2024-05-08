@@ -16,7 +16,6 @@ class JobController extends Controller
     {
         // Gets every record from "jobs_table" - <..latest()->simplePaginate(3)> == Latest 3 items with a Menu-Side-bar || simple define Side-bar(without simple = another Side-bar)
         $jobs = Job::with('employer')->latest()->simplePaginate(5);
-        // . alternativ zu /
         return view('jobs.index', [
             'jobs' => $jobs
         ]);
@@ -34,19 +33,28 @@ class JobController extends Controller
 
     public function store()
     {
+        // dd(auth()->user()->employer->id);
         // Rule of input field (Error messages about input -> create.blade.php(@error))
         request()->validate([
             'title' => ['required', 'min:3'],
             'salary' => ['required']
         ]);
+        // ToDO: Die Employer_id(UnternehmenId) von dem Aktuell eingeloggten user zuteilen 
+        // $employerId = auth()->user()->employer()->first()->id;
+        $employerId = auth()->user()->employer->id;
 
+        // $user = auth()->user();
+        // $employerId = $user->employer->id;
         // Save(create) DB columns
         $job = Job::create([
             'title' => request('title'),
             'salary' => request('salary'),
-            'employer_id' => 1
+            'employer_id' => $employerId// 1 // Just to work but need to fix this
+            // 'employer_id' => $employerId
+            // 'employer_id' => auth()->user()->employer->id
+            // 'employer_id' => 1
         ]);
-
+                                    // queue or send
         Mail::to($job->employer->user)->send(
             new JobPosted($job)
         );
@@ -71,16 +79,13 @@ class JobController extends Controller
 
     public function update(Job $job)
     {
-        // Gate::authorize('edit-job', $job); // Authorizierung muss in jeder Funktion vorhanden sein wenn keine Rouute::angegeben
-        // - Validate - Rule of input field (Error messages about input -> create.blade.php(@error))
+        Gate::authorize('edit', $job);
+
         request()->validate([
             'title' => ['required', 'min:3'],
             'salary' => ['required']
         ]);
-        // - Authorize - (on hold...)
-
-        // - Update the job - (FindOrFail == try to find job but if u couldn't abort)
-        $job = Job::findOrFail($job);
+        // $job = Job::findOrFail($job);
         $job->update([
             'title' => request('title'),
             'salary' => request('salary'),
@@ -92,11 +97,10 @@ class JobController extends Controller
 
     public function destroy(Job $job)
     {
+        Gate::authorize('edit', $job);
         // - Delete the Job -
-    Job::findOrFail($job)->delete(); // == $job = Job::FindOrFail($id);
-                                     //    $job->delete();
-
-    // - Redirect - 
-    return redirect('/jobs');
+        $job->delete();
+        // Job::findOrFail($job)->delete();
+        return redirect('/jobs');
     }
 }
