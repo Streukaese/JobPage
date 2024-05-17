@@ -6,7 +6,8 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximul-scale=1.0, minimul-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>My Website</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  @vite(['resources/css/app.css'])
+  {{-- <script src="https://cdn.tailwindcss.com"></script> not more need (26) because tailwind be a variable to app.css--}}
 </head>
 
 <body class="h-full">

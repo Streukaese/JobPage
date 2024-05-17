@@ -33,29 +33,25 @@ class JobController extends Controller
 
     public function store()
     {
-        // dd(auth()->user()->employer->id);
         // Rule of input field (Error messages about input -> create.blade.php(@error))
         request()->validate([
             'title' => ['required', 'min:3'],
             'salary' => ['required']
         ]);
-        // ToDO: Die Employer_id(UnternehmenId) von dem Aktuell eingeloggten user zuteilen 
-        // $employerId = auth()->user()->employer()->first()->id;
+        // ToDO: Die Employer_id(UnternehmenId) von dem Aktuell eingeloggten user zuteilen -- DONE == Testing
         $employerId = auth()->user()->employer->id;
 
-        // $user = auth()->user();
-        // $employerId = $user->employer->id;
         // Save(create) DB columns
         $job = Job::create([
             'title' => request('title'),
             'salary' => request('salary'),
-            'employer_id' => $employerId// 1 // Just to work but need to fix this
+            'employer_id' => $employerId
             // 'employer_id' => $employerId
             // 'employer_id' => auth()->user()->employer->id
             // 'employer_id' => 1
         ]);
-                                    // queue or send
-        Mail::to($job->employer->user)->send(
+                                    // queue or send == if(queue) { Cmd > "./vendor/bin/sail artisan queue:work" <||> "php artisan queue:work"}
+        Mail::to($job->employer->user)->queue(
             new JobPosted($job)
         );
 
@@ -100,7 +96,7 @@ class JobController extends Controller
         Gate::authorize('edit', $job);
         // - Delete the Job -
         $job->delete();
-        // Job::findOrFail($job)->delete();
+        // - Redirect to the job page - <<((Job::findOrFail($job)->delete();))>>
         return redirect('/jobs');
     }
 }

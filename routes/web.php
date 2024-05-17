@@ -3,11 +3,18 @@
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionController;
+use App\Jobs\TranslationJob;
+use App\Models\Job;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home');
 Route::view('/contact', 'contact');
-Route::view('/test', 'test');
+Route::get('test', function () {        // Alternativ _--_ Route::view('/test', 'test');
+    $job = Job::first();
+    TranslationJob::dispatch($job);
+
+    return 'Done';
+}); 
 
 // Route::get('test', function () { // zum testen des Emailservices
     // \Illuminate\Support\Facades\Mail::to('bleeseds@gmail.com')->send(   // return new \App\Mail\JobPosted(); -- To Test the view ob JobPosted(job-posted-blade.php)
